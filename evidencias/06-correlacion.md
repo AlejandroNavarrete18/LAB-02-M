@@ -6,10 +6,10 @@ bitacora()
   .filter(e => e.msg === "Profiler settings changed")
   .map(e => ({ t: e.t, ctx: e.ctx, msg: e.msg, attr: e.attr }))
 ```
-Con el `ctx` del último evento (sustituir `connXX` por el tuyo):
+
 ```js
 bitacora()
-  .filter(e => e.ctx === "connXX" && e.msg === "Successfully authenticated")
+  .filter(e => e.ctx === "conn19" && e.msg === "Successfully authenticated")
   .map(e => ({ t: e.t, ctx: e.ctx, user: e.attr.user, db: e.attr.db, client: e.attr.client }))
 ```
 
@@ -78,6 +78,6 @@ comercial> bitacora().filter(e => e.ctx === "conn19" && e.msg === "Successfully 
 ```
 
 ## Respuestas
-1. **Usuario que cambió la configuración del perfilador:** `admin` (base `admin`). **Eventos que lo demuestran:** (a) `Profiler settings changed` en la conexión `connXX`, y (b) `Successfully authenticated` en esa misma conexión `connXX` con `user: admin`. La línea del cambio no trae el usuario; se obtiene uniendo ambos eventos por `ctx`.
-2. **Condición de validez:** ambos eventos deben pertenecer al mismo arranque del servidor, porque los números de conexión (`ctx`) vuelven a empezar al reiniciar; si hubo un reinicio entre los dos eventos, el mismo `connXX` puede ser otra conexión distinta. Además, la autenticación debe ocurrir antes del cambio y los dos eventos deben seguir disponibles (`getLog` solo guarda los 1024 más recientes).
+1. **Usuario que cambió la configuración del perfilador:** `admin` (base `admin`). **Eventos que lo demuestran:** (a) `Profiler settings changed` en la conexión `conn19`, y (b) `Successfully authenticated` en esa misma conexión `conn19` con `user: admin`. La línea del cambio no trae el usuario; se obtiene uniendo ambos eventos por `ctx`.
+2. **Condición de validez:** ambos eventos deben pertenecer al mismo arranque del servidor, porque los números de conexión (`ctx`) vuelven a empezar al reiniciar; si hubo un reinicio entre los dos eventos, el mismo `conn19` puede ser otra conexión distinta. Además, la autenticación debe ocurrir antes del cambio y los dos eventos deben seguir disponibles (`getLog` solo guarda los 1024 más recientes).
 3. **Relevancia de registrar un cambio de configuración del propio registro:** quien apaga, filtra o cambia el perfilador puede dejar de registrar actividad y ocultarla. Que el cambio quede registrado y se pueda atribuir permite detectar ventanas sin evidencia y posibles manipulaciones del mecanismo de trazabilidad.
