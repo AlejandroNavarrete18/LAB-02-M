@@ -34,3 +34,13 @@ db.setProfilingLevel(1, { filter: { op: { $in: ["insert", "update", "remove"] } 
 db.getProfilingStatus()
 // SHELL: mongosh "mongodb://app_ventas:<REDACTED>@127.0.0.1:27017/comercial?appName=app-ventas-web" --quiet --eval 'db.clientes.find({ _id: 1 }).toArray(); db.clientes.updateOne({ _id: 1 }, { $set: { telefono: "6670000000" } })'
 db.system.profile.find({}, { op: 1, ns: 1, user: 1, appName: 1, "command.q": 1, "command.u": 1, ts: 1 })
+// ===== Actividad 5 =====
+// SHELL: mongosh "mongodb://app_ventas:incorrecta@127.0.0.1:27017/comercial" --quiet --eval "db.clientes.countDocuments()"
+// SHELL: mongosh "mongodb://usuario_inexistente:x@127.0.0.1:27017/comercial" --quiet --eval "db.clientes.countDocuments()"
+bitacora()
+  .filter(e => e.c === "ACCESS" && e.msg === "Failed to authenticate")
+  .map(e => ({ t: e.t, id: e.id, ctx: e.ctx, user: e.attr.user, client: e.attr.client, error: e.attr.error, result: e.attr.result, app: e.attr.doc.application.name }))
+bitacora()
+  .filter(e => e.msg === "Successfully authenticated" && e.attr.user === "app_ventas")
+  .slice(-1)
+  .map(e => ({ t: e.t, id: e.id, ctx: e.ctx, client: e.attr.client, result: e.attr.result, app: e.attr.doc.application.name }))
