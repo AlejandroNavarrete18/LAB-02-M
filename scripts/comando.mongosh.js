@@ -47,3 +47,17 @@ bitacora()
 // ===== Actividad 6 (sustituir connXX) =====
 bitacora().filter(e => e.msg === "Profiler settings changed").map(e => ({ t: e.t, ctx: e.ctx, msg: e.msg, attr: e.attr }))
 bitacora().filter(e => e.ctx === "connXX" && e.msg === "Successfully authenticated").map(e => ({ t: e.t, ctx: e.ctx, user: e.attr.user, db: e.attr.db, client: e.attr.client }))
+// ===== Actividad 7 =====
+db.getSiblingDB("auditoria").instantaneas_privilegios.insertOne({
+  momento: new Date(),
+  tomada_por: db.runCommand({ connectionStatus: 1 }).authInfo.authenticatedUsers,
+  usuarios: db.getUsers().users.map(u => ({ user: u.user, db: u.db, roles: u.roles }))
+})
+db.setProfilingLevel(2)
+db.grantRolesToUser("app_ventas", [{ role: "dbAdmin", db: "comercial" }])
+db.system.profile.countDocuments({ "command.grantRolesToUser": { $exists: true } })
+bitacora().filter(e => JSON.stringify(e).includes("grantRoles")).length
+// (repetir el insertOne de la primera instantánea)
+db.getSiblingDB("auditoria").instantaneas_privilegios.find({}, { _id: 0 }).sort({ momento: 1 })
+db.revokeRolesFromUser("app_ventas", [{ role: "dbAdmin", db: "comercial" }])
+db.setProfilingLevel(1, { filter: { op: { $in: ["insert", "update", "remove"] } } })
