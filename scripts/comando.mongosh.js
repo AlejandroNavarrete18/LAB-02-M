@@ -44,3 +44,6 @@ bitacora()
   .filter(e => e.msg === "Successfully authenticated" && e.attr.user === "app_ventas")
   .slice(-1)
   .map(e => ({ t: e.t, id: e.id, ctx: e.ctx, client: e.attr.client, result: e.attr.result, app: e.attr.doc.application.name }))
+// ===== Actividad 6 (sustituir connXX) =====
+bitacora().filter(e => e.msg === "Profiler settings changed").map(e => ({ t: e.t, ctx: e.ctx, msg: e.msg, attr: e.attr }))
+bitacora().filter(e => e.ctx === "connXX" && e.msg === "Successfully authenticated").map(e => ({ t: e.t, ctx: e.ctx, user: e.attr.user, db: e.attr.db, client: e.attr.client }))
