@@ -61,3 +61,9 @@ bitacora().filter(e => JSON.stringify(e).includes("grantRoles")).length
 db.getSiblingDB("auditoria").instantaneas_privilegios.find({}, { _id: 0 }).sort({ momento: 1 })
 db.revokeRolesFromUser("app_ventas", [{ role: "dbAdmin", db: "comercial" }])
 db.setProfilingLevel(1, { filter: { op: { $in: ["insert", "update", "remove"] } } })
+// ===== Actividad 8 =====
+// SHELL: mongosh "mongodb://admin:<REDACTED>@127.0.0.1:27017/comercial?authSource=admin" --quiet --eval 'db.adminCommand({ getLog: "global" }).log.join("\n")' > /lab/evidencias/bitacora-mongod.log
+// (reinicio: docker restart dba-u3-mongo)
+db.getProfilingStatus()
+db.system.profile.countDocuments()
+bitacora().length
